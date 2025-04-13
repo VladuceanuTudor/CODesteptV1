@@ -1,0 +1,45 @@
+# Root-level ignores
+node_modules/
+.env
+.env.* 
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.DS_Store
+dist/
+build/
+*.log
+
+# Ignore coverage reports
+coverage/
+
+# Ignore local .vscode settings
+.vscode/
+
+# Ignore OS files
+Thumbs.db
+
+##########################
+# Frontend (Next.js)
+##########################
+
+# Assuming frontend is in /frontend
+/codestept/.next/
+/codestept/node_modules/
+/codestept/.env
+/codestept/.env.* 
+/codestept/out/
+/codestept/.turbo/
+/codestept/public/static/
+
+##########################
+# Backend (Node.js / Express / etc.)
+##########################
+
+# Assuming backend is in /backend
+/codestept-be/node_modules/
+/codestept-be/.env
+/codestept-be/.env.* 
+/codestept-be/dist/
+/codestept-be/build/
