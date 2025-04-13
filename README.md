@@ -14,7 +14,7 @@ CODesteptV1 este o aplicație web full-stack concepută pentru a ajuta utilizato
 
 ## Tehnologii
 
-- **Back-end:** Node.js, Express, MongoDB, Mongoose, JWT, Bcrypt
+- **Back-end:** Node.js, Express, MongoDB, Mongoose, JWT, Bcrypt, DockerDesktop
 - **Front-end:** Next.js, React, TypeScript, Tailwind CSS, Codemirror
 
 ## Instalare
@@ -30,10 +30,11 @@ CODesteptV1 este o aplicație web full-stack concepută pentru a ajuta utilizato
    ```
 3. **Creează un fișier `.env` în dosarul `codestept-be` cu următoarele variabile:**
    ```
-   MONGODB_URI=stringul_tău_de_conexiune_MongoDB
-   JWT_SECRET=cheia_ta_secretă_JWT
-   EMAIL_USER=adresa_ta_de_email
-   EMAIL_PASS=parola_pentru_email
+    MONGO_URI=mongodb:
+    JWT_SECRET=
+    PORT=5000
+    EMAIL_USER=
+    EMAIL_PASS=
    ```
    **Notă:** Asigură-te că adaugi toate variabilele de mediu necesare, bazate pe cerințele din codul tău (de exemplu, dacă folosești alte servicii sau API-uri externe).
 4. **Navighează la dosarul front-end și instalează dependențele:**
@@ -41,14 +42,17 @@ CODesteptV1 este o aplicație web full-stack concepută pentru a ajuta utilizato
    cd ../codestept
    npm install
    ```
-5. **(Opțional) Creează un fișier `.env.local` în dosarul `codestept` pentru variabilele de mediu specifice front-end-ului, dacă este necesar.**
+5. **Creează un fișier `.env` în dosarul `codestept` pentru a descrie ruta catre api-ul din back-end. Exemplu:**
+    ```js
+   API_URL=http://localhost:5000
+   ```
 
 ## Utilizare
 
 1. **Pornește serverul back-end:**
    ```bash
    cd codestept-be
-   npm start
+   node index.js
    ```
 2. **Pornește serverul de dezvoltare front-end:**
    ```bash
@@ -57,14 +61,30 @@ CODesteptV1 este o aplicație web full-stack concepută pentru a ajuta utilizato
    ```
 3. **Accesează aplicația în browser la [localhost:3000](https://localhost:3000).**
 
-## Contribuții
+## Utilizare prin intermediul interfetei:
 
-Contribuțiile sunt binevenite! Te rog să faci fork repository-ului și să trimiți un pull request cu modificările tale. Asigură-te că urmezi bunele practici de codare și că adaugi teste unde este cazul.
+- Se pot vizualiza si anumite functionalitati daca esti guest dar majoritatea sunt dispoibile doar daca ai cont.
 
-## Licență
+- Intrare in cont:
+    - daca ati importat si baza de date actuala se pot accesa toate cele 3 tipuri de conturi(in fucntie de rol) cu urmatoarele credentiale:
+        * user: Email: rusucalin2003@yahoo.com Passwd: 123
+        * profesor: Email: tudorvladuceanu@gmail.com Passwd: qwe
+        * manager: Email: vladuceanu.info@gmail.com Passwd: manager
 
-Acest proiect este licențiat sub [Licența MIT](LICENSE).  
-**Notă:** Dacă nu ai deja un fișier `LICENSE`, te rog să adaugi unul în repository-ul tău.
+### In functie de ce tip de cont ai ales fiecare are urmatoarele functionalitati:
+> [!mesaj]
+> text
+
+#### User:
+- Se poate da submit la o problema
+- Poti vizualiza paginile de profil ale altor utilizatori
+- Poti sa primesti teme de la userii de tip profesor
+- Poti sa iti schimbi usernameul sau parola
+- Poti sa strangi XP(facand probleme) si sa concurezi cu ceilalti useri sa ajungi in leaderboard(Top 10 users by xp) 
+
+#### Profesor:
+
+
 
 ## Contact
 
