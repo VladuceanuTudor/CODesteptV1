@@ -131,16 +131,8 @@ const Topbar: React.FC<TopbarProps> = ({ problemPage }) => {
           {user && isAdmin && navButton("/problems/ProblemeleMele", "Problemele mele")}
           {user && !isAdmin && navButton("/problems/tema", "Temele mele")}
           {user && navButton("/users", "Utilizatori")}
+          {navButton("/contact", "Contact")}
 
-          {/* GitHub link */}
-          <a
-            href="https://github.com/VladuceanuTudor"
-            target="_blank"
-            rel="noreferrer"
-            className="bg-dark-layer-1 py-1.5 px-3 rounded text-lime-700 hover:bg-dark-divider-border-2 w-full text-center md:w-auto"
-          >
-            GitHub
-          </a>
 
           {/* Timer (only on problem page) */}
           {user && problemPage && <Timer />}
