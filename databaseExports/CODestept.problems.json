@@ -1,0 +1,188 @@
+[{
+  "_id": {
+    "$oid": "67eab563f6ad23e9b9b4f677"
+  },
+  "title": "Hello World",
+  "problemStatement": "Te rog sa faci un program care sa afiseze in consola \"Hello World!\".",
+  "description": "-bine ai venit pe platforma mea",
+  "difficulty": "Easy",
+  "category": "Intro",
+  "examples": [
+    {
+      "inputText": "Nimic",
+      "outputText": "Hello World",
+      "explanation": "",
+      "_id": {
+        "$oid": "67eab563f6ad23e9b9b4f678"
+      }
+    }
+  ],
+  "constraints": [
+    ""
+  ],
+  "starterCode": "#include <iostream>\n\nint main(){\n\n}",
+  "handlerFunction": "",
+  "starterFunctionName": "",
+  "testCases": [
+    {
+      "input": "NULL",
+      "expectedOutput": "Hello World",
+      "_id": {
+        "$oid": "67eab563f6ad23e9b9b4f679"
+      }
+    }
+  ],
+  "likes": 0,
+  "dislikes": 0,
+  "likedBy": [],
+  "dislikedBy": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67eabf3b6342aa2eca99f5ca"
+  },
+  "title": "test23",
+  "problemStatement": "wqe",
+  "description": "weq",
+  "difficulty": "Hard",
+  "category": "Intro",
+  "examples": [
+    {
+      "inputText": "qwe",
+      "outputText": "qwe",
+      "explanation": "qwe",
+      "_id": {
+        "$oid": "67eabf3b6342aa2eca99f5cb"
+      }
+    }
+  ],
+  "constraints": [
+    "qwe"
+  ],
+  "starterCode": "qwe",
+  "handlerFunction": "",
+  "starterFunctionName": "",
+  "testCases": [
+    {
+      "input": "qwe",
+      "expectedOutput": "qwe",
+      "_id": {
+        "$oid": "67eabf3b6342aa2eca99f5cc"
+      }
+    }
+  ],
+  "likes": 2,
+  "dislikes": 0,
+  "likedBy": [
+    {
+      "$oid": "67ea929edcca7b63f57cc74b"
+    },
+    {
+      "$oid": "67f4e7692279a5e17671cf5f"
+    }
+  ],
+  "dislikedBy": [],
+  "author": {
+    "$oid": "67ea929edcca7b63f57cc74b"
+  },
+  "__v": 13
+},
+{
+  "_id": {
+    "$oid": "67f1496a618251000712da20"
+  },
+  "title": "Problema2",
+  "problemStatement": "Scrie un program care citeste de la tastatura 2 numere intregi si afiseaza suma acestora.",
+  "description": "- codul sa fie cat mai simplu.",
+  "difficulty": "Medium",
+  "category": "Intro",
+  "examples": [
+    {
+      "inputText": "2 5",
+      "outputText": "7",
+      "explanation": "2+5 = 7",
+      "_id": {
+        "$oid": "67f1496a618251000712da21"
+      }
+    }
+  ],
+  "constraints": [
+    "- numerele sunt intregi.",
+    "- se pot stoca pe 4 octeti."
+  ],
+  "starterCode": "#include <iostream>\n\nusing namespace std;\n\nint main()\n{\n\n}",
+  "handlerFunction": "",
+  "starterFunctionName": "",
+  "testCases": [
+    {
+      "input": "2 3",
+      "expectedOutput": "5",
+      "_id": {
+        "$oid": "67f1496a618251000712da22"
+      }
+    },
+    {
+      "input": "100 1000",
+      "expectedOutput": "1100",
+      "_id": {
+        "$oid": "67f1496a618251000712da23"
+      }
+    }
+  ],
+  "likes": 0,
+  "dislikes": 1,
+  "likedBy": [],
+  "dislikedBy": [
+    {
+      "$oid": "67f4e7692279a5e17671cf5f"
+    }
+  ],
+  "author": {
+    "$oid": "67ea929edcca7b63f57cc74b"
+  },
+  "__v": 19
+},
+{
+  "_id": {
+    "$oid": "67fa7ffb626dc6debb93afb4"
+  },
+  "title": "Tema",
+  "problemStatement": "exemplu tema",
+  "description": "exemplu",
+  "difficulty": "Medium",
+  "category": "tema",
+  "examples": [
+    {
+      "inputText": "",
+      "outputText": "",
+      "explanation": "",
+      "_id": {
+        "$oid": "67fa7ffb626dc6debb93afb5"
+      }
+    }
+  ],
+  "constraints": [
+    ""
+  ],
+  "starterCode": "",
+  "handlerFunction": "",
+  "starterFunctionName": "",
+  "testCases": [
+    {
+      "input": "1",
+      "expectedOutput": "1",
+      "_id": {
+        "$oid": "67fa7ffb626dc6debb93afb6"
+      }
+    }
+  ],
+  "likes": 0,
+  "dislikes": 0,
+  "likedBy": [],
+  "dislikedBy": [],
+  "author": {
+    "$oid": "67ea929edcca7b63f57cc74b"
+  },
+  "__v": 0
+}]

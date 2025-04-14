@@ -1,6 +1,24 @@
 
 # CODesteptV1
 
+# Cuprins
+
+- [Descriere](#descriere)
+- [Caracteristici](#caracteristici)
+- [Tehnologii](#tehnologii)
+- [Instalare](#instalare)
+- [Utilizare](#utilizare)
+- [Utilizare prin intermediul interfetei](#utilizare-prin-intermediul-interfetei)
+  - [User](#user)
+  - [Profesor](#profesor)
+  - [Manager](#manager)
+- [Functionalitati generale](#functionalitati-generale)
+- [Arhitectura proiectului](#arhitectura-proiectului)
+  - [Arhitectura Backend](#arhitectura-backend---nodejs-codestept-be)
+  - [Arhitectura Frontend](#arhitectur%C4%83-frontend---nextjs-codestept)
+- [Contact](#contact)
+
+
 ## Descriere
 
 CODesteptV1 este o aplicație web full-stack concepută pentru a ajuta utilizatorii să practice și să-și îmbunătățească abilitățile de programare prin rezolvarea diverselor probleme de codificare. Platforma oferă o interfață prietenoasă, un editor de cod integrat cu evidențiere sintactică și un back-end robust pentru gestionarea datelor utilizatorilor și a trimiterilor de soluții.
