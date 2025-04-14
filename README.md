@@ -71,6 +71,8 @@ CODesteptV1 este o aplicație web full-stack concepută pentru a ajuta utilizato
         * profesor: Email: tudorvladuceanu@gmail.com Passwd: qwe
         * manager: Email: vladuceanu.info@gmail.com Passwd: manager
 
+- Pentru a ajunge la pagina principala(lista/tabelul de probleme) -> click pe LOGO-ul aplicatiei din Topbar.
+
 ### In functie de ce tip de cont ai ales fiecare are urmatoarele functionalitati:
 > **Obs:** Conturile de tip Profesor contin toate functionalitaile unui cont de tip User.
 
@@ -83,6 +85,7 @@ CODesteptV1 este o aplicație web full-stack concepută pentru a ajuta utilizato
 - Poate vedea problemele facute, acestea fiind afisate intr-o lista in profil
 - Poate adauga olema la favorite(steluta), lista de asemena fiind vizibila in profil
 - Poate da like/dislike la o problema
+- Poate adauga un comentariu la o problema(se poate intra in sectiunea de comentarii din meniul principal cu probleme din boxul unei probleme)
 
 #### Profesor:
 - Poate crea noi probleme
@@ -93,9 +96,10 @@ CODesteptV1 este o aplicație web full-stack concepută pentru a ajuta utilizato
 
 #### Manager:
 - Are control complet asupra datelor stocate in baza de date
-Din tabela de manager de la /manager
+Din tabela de manager de la /manager (se poate accesa si din navbar)
 - Pentru useri si probleme: new/edit/delete
 - Poate si adauga/vizualiza temele
+- Poate sterge comentarii
 
 #### Functionalitati generale:
 * Vizualizare probleme
@@ -120,10 +124,12 @@ Middleware pentru controlul accesului:
 Modele Mongoose (MongoDB):
 - `User.js` – definește schema utilizatorilor.
 - `Problem.js` – definește schema exercițiilor.
+- `Comment.js` - defineste schema comentariilor.
 
 ### 📁 routes/
 API endpoints (REST):
 - `auth.js` – login / logout / autentificare / verificare.
+- `comment.js` - gestioneaza comentarii.
 - `user.js` – date utilizator, profil.
 - `problem.js` – operații CRUD pe exerciții.
 - `homework.js` – rute pentru teme.

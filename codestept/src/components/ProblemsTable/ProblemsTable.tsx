@@ -234,7 +234,12 @@ const ProblemsTable = () => {
                     </button>
                   ) : (
                     <p className="text-gray-400 italic text-base">
-                      Video coming soon
+                      <Link
+                        href={`/comments/${doc._id}`}
+                        className="text-blue-400 hover:text-blue-300"
+                      >
+                        Sectiunea de comentarii
+                      </Link>
                     </p>
                   )}
                 </div>

@@ -1,7 +1,8 @@
 // src/components/manager/ProblemsTab.tsx
 import { useState } from "react";
 import Link from "next/link";
-import { API_BASE_URL } from '@/lib/config';
+import { API_BASE_URL } from "@/lib/config";
+import ProblemCommentsModal from "@/components/manager/ProblemCommentsModal" // Import the new component
 
 interface Problem {
   _id: string;
@@ -26,6 +27,8 @@ interface Props {
 
 const ProblemsTab = ({ problems, fetchProblems, setActionError }: Props) => {
   const [problemModalOpen, setProblemModalOpen] = useState<boolean>(false);
+  const [commentsModalOpen, setCommentsModalOpen] = useState<boolean>(false); // New state for comments modal
+  const [selectedProblem, setSelectedProblem] = useState<Problem | null>(null); // Track selected problem for comments
   const [problemForm, setProblemForm] = useState<Problem>({
     _id: "",
     title: "",
@@ -213,6 +216,11 @@ const ProblemsTab = ({ problems, fetchProblems, setActionError }: Props) => {
     setProblemModalOpen(true);
   };
 
+  const openCommentsModal = (problem: Problem) => {
+    setSelectedProblem(problem);
+    setCommentsModalOpen(true);
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
@@ -244,6 +252,12 @@ const ProblemsTab = ({ problems, fetchProblems, setActionError }: Props) => {
                 </p>
               </div>
               <div className="flex space-x-2">
+                <button
+                  onClick={() => openCommentsModal(problem)} // New button
+                  className="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700"
+                >
+                  Comentarii
+                </button>
                 <button
                   onClick={() => openEditProblemModal(problem)}
                   className="px-3 py-1 bg-yellow-600 text-white rounded-md hover:bg-yellow-700"
@@ -490,6 +504,17 @@ const ProblemsTab = ({ problems, fetchProblems, setActionError }: Props) => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Comments Modal */}
+      {commentsModalOpen && selectedProblem && (
+        <ProblemCommentsModal
+          problemId={selectedProblem._id}
+          problemTitle={selectedProblem.title}
+          isOpen={commentsModalOpen}
+          onClose={() => setCommentsModalOpen(false)}
+          setActionError={setActionError}
+        />
       )}
     </div>
   );

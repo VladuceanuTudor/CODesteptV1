@@ -119,7 +119,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
   const onChange = (value: string) => {
     setUserCode(value);
     if (typeof window !== "undefined" && pid) {
-      localStorage.setItem(`code-${pid}`, JSON.stringify(value));
+      localStorage.setItem(`code-${pid}`, JSON.stringify(value)); // Save code to localStorage daca vrei
     }
   };
 

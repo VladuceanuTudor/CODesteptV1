@@ -28,6 +28,7 @@ const problemRoutes = require("./routes/problem");
 const userRoutes = require("./routes/user");
 const homeworkRoutes = require("./routes/homework");
 const managerRoutes = require("./routes/manager");
+const commentRoutes = require("./routes/comment");
 
 // Use routes
 app.use("/api/auth", authRoutes);
@@ -35,6 +36,7 @@ app.use("/api/problems", problemRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/homework", homeworkRoutes);
 app.use("/api/manager", managerRoutes);
+app.use("/api/comments", commentRoutes);
 
 // Fallback for undefined routes
 app.use((req, res) => {
