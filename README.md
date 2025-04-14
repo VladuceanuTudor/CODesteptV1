@@ -72,17 +72,130 @@ CODesteptV1 este o aplicație web full-stack concepută pentru a ajuta utilizato
         * manager: Email: vladuceanu.info@gmail.com Passwd: manager
 
 ### In functie de ce tip de cont ai ales fiecare are urmatoarele functionalitati:
-> [!mesaj]
-> text
+> **Obs:** Conturile de tip Profesor contin toate functionalitaile unui cont de tip User.
 
 #### User:
 - Se poate da submit la o problema
 - Poti vizualiza paginile de profil ale altor utilizatori
 - Poti sa primesti teme de la userii de tip profesor
-- Poti sa iti schimbi usernameul sau parola
+- Poti sa iti schimbi usernameul sau poza de profil
 - Poti sa strangi XP(facand probleme) si sa concurezi cu ceilalti useri sa ajungi in leaderboard(Top 10 users by xp) 
+- Poate vedea problemele facute, acestea fiind afisate intr-o lista in profil
+- Poate adauga olema la favorite(steluta), lista de asemena fiind vizibila in profil
+- Poate da like/dislike la o problema
 
 #### Profesor:
+- Poate crea noi probleme
+- Poate vedea problemele facute de el si edita
+- Poate asigna probleme ca tema userilor
+- Poate face alti useri din user normal -> admin
+- Poate vizualiza ce probleme au asignate la tema alti useri
+
+#### Manager:
+- Are control complet asupra datelor stocate in baza de date
+Din tabela de manager de la /manager
+- Pentru useri si probleme: new/edit/delete
+- Poate si adauga/vizualiza temele
+
+#### Functionalitati generale:
+* Vizualizare probleme
+* Cautare + filtrare probleme(cautarea se face dupa titlu, categorie si autor)
+* Vizualizare useri + cautare
+* Pagina de contact
+* In navbarul din interfata unei probleme este adaugata functionalitatea de timer
+
+# Arhitectura proiectului:
+
+## Arhitectura Backend - Node.js (`codestept-be`)
+
+### 📁 config/
+Configurare serviciu de email pentru schimbarea parolei.
+
+### 📁 middleware/
+Middleware pentru controlul accesului:
+- `auth.js` – verifică autentificarea (ex: token JWT).
+- `admin.js`, `manager.js` – filtrează accesul în funcție de rolul utilizatorului.
+
+### 📁 models/
+Modele Mongoose (MongoDB):
+- `User.js` – definește schema utilizatorilor.
+- `Problem.js` – definește schema exercițiilor.
+
+### 📁 routes/
+API endpoints (REST):
+- `auth.js` – login / logout / autentificare / verificare.
+- `user.js` – date utilizator, profil.
+- `problem.js` – operații CRUD pe exerciții.
+- `homework.js` – rute pentru teme.
+- `manager.js` – funcționalități manageriale CRUD.
+
+### 📁 utils/
+Funcții de utilitate:
+- `dockerExecutor.js` – rulează cod sursă în containere Docker.
+- `dockerExecutorTest.js` – teste pentru executorul Docker(a fost utilizat doar pentru debug in dezvoltare).
+
+### ⚙️ .env
+Configurări ascunse am precizat mai sus cum trebuie sa arate acest fisier pentru o functionare corecta.
+
+### 🚀 index.js
+Punctul de pornire al aplicației Express: încarcă middleware-urile, conectează baza de date, pornește serverul.
+
+## Arhitectură Frontend - Next.js (`codestept`)
+
+### 📁 public/
+Imagini și resurse statice accesibile direct în browser (ex: `/avatar.png`, logo-uri, etc).
+
+### 📁 src/
+Conține întreg codul aplicației:
+
+#### 📁 atoms/
+State-uri globale gestionate cu Jotai (ex: `authModalAtom` controlează afișarea ferestrei de autentificare).
+
+#### 📁 components/
+Componente UI împărțite logic:
+- `Buttons/`, `ui/`, `navbar/` – butoane, bare de navigare, componente vizuale reutilizabile.
+- `Modals/` – ferestre modale pentru autentificare, teme, înregistrare etc.
+- `ProblemsTable/`, `UserSearchBar.tsx`, `ProblemSearchBar.tsx` – componente pentru căutare și afișare date.
+- `Workspace/` – interfață pentru rularea codului (editor, preview, explicații).
+
+#### 📁 hooks/
+Hooks personalizați pentru logica reutilizabilă în componentă (ex: interacțiuni cu backend, auth etc).
+
+#### 📁 lib/
+Funcții auxiliare sau librării proprii (posibil apeluri API, validări, parsere).
+
+#### 📁 pages/
+Rutele aplicației (Next.js generează automat pagini din aceste fișiere):
+- `api/` – funcții server-side (API endpointuri).
+- `auth/`, `contact/`, `users/`, `manager/`, `problems/`, `profile/` – pagini funcționale, organizate pe module.
+- `404.tsx`, `_document.tsx`, `_app.tsx` – pagini speciale și configurații globale.
+
+#### 📁 styles/
+Fișiere CSS globale sau Tailwind setup.
+
+#### 📁 utils/
+Funcții utilitare care nu aparțin unui modul specific (ex: gestionare token-uri, validări date, etc).
+
+---
+
+### ⚙️ Alte fișiere
+- `.env` – variabile de mediu (ex: URL backend, chei de acces).
+- `package.json` – dependințe și scripturi (ex: `next`, `react`, `tailwindcss`).
+- `next.config.js` – configurația aplicației Next.js.
+- `tailwind.config.ts` – setări personalizate pentru TailwindCSS.
+- `README.md` – documentația proiectului.
+
+---
+
+### 🔧 Funcționalități cheie
+- **Autentificare & înregistrare** cu modale dedicate.
+- **Gestionare exerciții și teme** prin interfețe manageriale.
+- **WorkSpace** interactiv cu editor de cod integrat.
+- **Tabele și filtre** pentru probleme și utilizatori.
+- **Rulare cod sursă** integrată cu backend-ul (prin Docker).
+
+
+
 
 
 
