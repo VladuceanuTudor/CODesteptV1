@@ -258,36 +258,56 @@ const UsersPage = () => {
 
         {/* Leaderboard Section */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-4">Clasament Top 10:</h2>
+          <h2 className="text-2xl font-bold mb-4">Clasament Top 10</h2>
           {loadingLeaderboard ? (
             <div className="text-center text-gray-400 py-4">Se încarcă...</div>
           ) : leaderboardUsers.length > 0 ? (
-            <div className="space-y-4">
-              {leaderboardUsers.map((user, index) => (
-                <div
-                  key={user._id}
-                  className="flex items-center bg-gray-800 p-4 rounded-lg hover:bg-gray-700 transition-colors duration-200"
-                >
-                  <span className="w-8 text-lg font-bold text-yellow-400 mr-4">
-                    {index + 1}
-                  </span>
-                  <Link href={`/profile/${user.username}`}>
-                    <img
-                      src={user.profilePic || "/avatar.png"}
-                      alt={`${user.username}'s avatar`}
-                      className="w-10 h-10 rounded-full object-cover mr-4 cursor-pointer"
-                    />
-                  </Link>
-                  <div className="flex-1">
-                    <Link href={`/profile/${user.username}`}>
-                      <p className="text-lg font-semibold text-blue-400 hover:text-blue-300 cursor-pointer">
-                        {user.username}
-                      </p>
-                    </Link>
-                    <p className="text-gray-400 text-sm">XP: {user.xp}</p>
-                  </div>
-                </div>
-              ))}
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse bg-gray-800 rounded-lg shadow-lg">
+                <thead>
+                  <tr className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+                    <th className="py-3 px-4 text-left text-sm font-semibold">Loc</th>
+                    <th className="py-3 px-4 text-left text-sm font-semibold">Utilizator</th>
+                    <th className="py-3 px-4 text-left text-sm font-semibold">XP</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {leaderboardUsers.map((user, index) => (
+                    <tr
+                      key={user._id}
+                      className={`border-b border-gray-700 hover:bg-gray-700 transition-colors duration-200 ${
+                        index < 3 ? "text-yellow-400" : "text-gray-200"
+                      }`}
+                    >
+                      <td className="py-3 px-4">
+                        <span className="flex items-center">
+                          {index < 3 ? (
+                            <span className="mr-2">
+                              {index === 0 && "🥇"}
+                              {index === 1 && "🥈"}
+                              {index === 2 && "🥉"}
+                            </span>
+                          ) : null}
+                          {index + 1}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4">
+                        <Link href={`/profile/${user.username}`} className="flex items-center">
+                          <img
+                            src={user.profilePic || "/avatar.png"}
+                            alt={`${user.username}'s avatar`}
+                            className="w-8 h-8 rounded-full object-cover mr-3"
+                          />
+                          <span className="hover:text-blue-300 transition-colors duration-200">
+                            {user.username}
+                          </span>
+                        </Link>
+                      </td>
+                      <td className="py-3 px-4">{user.xp}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           ) : (
             <div className="text-center text-gray-400 py-4">Niciun utilizator în clasament.</div>
