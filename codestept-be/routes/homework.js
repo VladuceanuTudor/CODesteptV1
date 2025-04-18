@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
+const mongoose = require('mongoose');
 const User = require('../models/User');
 const Problem = require('../models/Problem'); // Assuming you have a Problem model
 
@@ -60,43 +61,67 @@ router.post("/assign/:userId", auth, admin, async (req, res) => {
   });
   
 
-// Route: View a user's homework (any authenticated user)
-router.get("/:userId", auth, async (req, res) => {
-  try {
-    const userId = req.params.userId;
-
-    // Find user and populate homework problem details
-    const user = await User.findById(userId)
-      .select("username homework solvedProblems")
-      .populate("homework.problemId", "title _id");
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
+  router.get("/:userId", auth, async (req, res) => {
+    try {
+      const userId = req.params.userId;
+  
+      // Validate userId
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ error: "Invalid user ID" });
+      }
+  
+      // Find user and populate homework problem details
+      const user = await User.findById(userId)
+        .select("username homework solvedProblems")
+        .populate("homework.problemId", "title _id");
+  
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+  
+      // Remove duplicate homework problems and invalid entries
+      const seenProblemIds = new Set();
+      user.homework = user.homework.filter((hw) => {
+        // Check if problemId exists and is valid
+        if (!hw.problemId || !mongoose.Types.ObjectId.isValid(hw.problemId)) {
+          return false;
+        }
+        const problemIdStr = hw.problemId.toString();
+        if (seenProblemIds.has(problemIdStr)) {
+          return false;
+        }
+        seenProblemIds.add(problemIdStr);
+        return true;
+      });
+  
+      // Remove homework problems that are in solvedProblems
+      const solvedProblemIds = user.solvedProblems
+        .filter((id) => mongoose.Types.ObjectId.isValid(id))
+        .map((id) => id.toString());
+  
+      user.homework = user.homework.filter(
+        (hw) => !solvedProblemIds.includes(hw.problemId.toString())
+      );
+  
+      // Save updated user
+      await user.save();
+  
+      // Prepare response
+      const homework = user.homework.map((hw) => ({
+        problemId: hw.problemId._id,
+        title: hw.problemId.title || "Untitled",
+        assignedAt: hw.assignedAt,
+      }));
+  
+      res.json({
+        username: user.username,
+        homework,
+      });
+    } catch (error) {
+      console.error("❌ Error fetching homework:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
-
-    // Remove homework problems that are in solvedProblems
-    const solvedProblemIds = user.solvedProblems.map((id) => id.toString());
-    user.homework = user.homework.filter(
-      (hw) => !solvedProblemIds.includes(hw.problemId.toString())
-    );
-    await user.save();
-
-    // Prepare response
-    const homework = user.homework.map((hw) => ({
-      problemId: hw.problemId._id,
-      title: hw.problemId.title,
-      assignedAt: hw.assignedAt,
-    }));
-
-    res.json({
-      username: user.username,
-      homework,
-    });
-  } catch (error) {
-    console.error("❌ Error fetching homework:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+  });
 
 // Route: Delete a homework problem (admin-only)
 router.delete("/:userId/:problemId", auth, admin, async (req, res) => {

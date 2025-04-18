@@ -67,7 +67,7 @@ router.put("/promote/:userId", auth, admin, async (req, res) => {
 });
 
 // Search users with suggestions
-router.get("/search", async (req, res) => {
+router.get("/search", auth, async (req, res) => {
   try {
     const { query } = req.query;
     if (!query) return res.status(400).json({ error: "Query is required" });
@@ -130,7 +130,7 @@ router.put('/profile-pic', auth, async (req, res) => {
 });
 
 // Get public profile by username
-router.get('/:username', async (req, res) => {
+router.get('/:username',  async (req, res) => {
   try {
     const user = await User.findOne({ username: req.params.username.toLowerCase() })
       .select('-password -resetPasswordToken -resetPasswordExpires -email')
@@ -145,7 +145,8 @@ router.get('/:username', async (req, res) => {
       starredProblems: user.starredProblems,
       solvedProblems: user.solvedProblems,
       profilePic: user.profilePic,
-      memberSince: user.createdAt
+      memberSince: user.createdAt,
+      isActive: user.isActive,
     });
   } catch (err) {
     console.error("Error fetching user profile:", err);

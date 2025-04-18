@@ -1,6 +1,6 @@
-// server/routes/manager.js
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose"); // Add mongoose import
 const User = require("../models/User");
 const Problem = require("../models/Problem");
 const managerMiddleware = require("../middleware/manager");
@@ -8,7 +8,7 @@ const managerMiddleware = require("../middleware/manager");
 // Get all users
 router.get("/users", managerMiddleware, async (req, res) => {
   try {
-    const users = await User.find().select("username email xp createdAt role");
+    const users = await User.find().select("username email xp createdAt role isActive");
     res.json({ users });
   } catch (error) {
     console.error("❌ Eroare la obținerea utilizatorilor:", error);
@@ -62,16 +62,19 @@ router.delete("/users/:userId", managerMiddleware, async (req, res) => {
       return res.status(404).json({ error: "Utilizatorul nu a fost găsit." });
     }
     if (user.role === "manager") {
-      return res.status(403).json({ error: "Nu se poate șterge un manager." });
+      return res.status(403).json({ error: "Nu se poate modifica un manager." });
     }
-    await user.deleteOne();
-    res.json({ message: "Utilizator șters cu succes." });
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.userId,
+      { $set: { isActive: !user.isActive } },
+      { new: true }
+    );
+    res.json({ message: "Starea utilizatorului a fost actualizată cu succes.", isActive: updatedUser.isActive });
   } catch (error) {
-    console.error("❌ Eroare la ștergerea utilizatorului:", error);
+    console.error("❌ Eroare la actualizarea utilizatorului:", error);
     res.status(500).json({ error: "Eroare internă a serverului." });
   }
 });
-
 
 // Get all problems
 router.get("/problems", managerMiddleware, async (req, res) => {
@@ -204,17 +207,47 @@ router.post("/homework/assign/:userId", managerMiddleware, async (req, res) => {
 // View homework
 router.get("/homework/:userId", managerMiddleware, async (req, res) => {
   try {
-    const user = await User.findById(req.params.userId)
+    const userId = req.params.userId;
+
+    // Validate userId
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: "ID utilizator invalid." });
+    }
+
+    // Find user and populate homework problem details
+    const user = await User.findById(userId)
       .select("username homework")
       .populate("homework.problemId", "title _id");
+
     if (!user) {
       return res.status(404).json({ error: "Utilizatorul nu a fost găsit." });
     }
+
+    // Remove duplicate homework problems (keep only first instance)
+    const seenProblemIds = new Set();
+    user.homework = user.homework.filter((hw) => {
+      // Check if problemId exists and is valid
+      if (!hw.problemId || !mongoose.Types.ObjectId.isValid(hw.problemId)) {
+        return false;
+      }
+      const problemIdStr = hw.problemId.toString();
+      if (seenProblemIds.has(problemIdStr)) {
+        return false;
+      }
+      seenProblemIds.add(problemIdStr);
+      return true;
+    });
+
+    // Save updated user to persist deduplication
+    await user.save();
+
+    // Prepare response
     const homework = user.homework.map((hw) => ({
       problemId: hw.problemId._id,
-      title: hw.problemId.title,
+      title: hw.problemId.title || "Fără titlu",
       assignedAt: hw.assignedAt,
     }));
+
     res.json({ username: user.username, homework });
   } catch (error) {
     console.error("❌ Eroare la obținerea temelor:", error);

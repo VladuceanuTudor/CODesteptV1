@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema({
   profilePic: { type: String, default: "" },
   resetPasswordToken: String,
   resetPasswordExpires: Date,
+  isActive: { type: Boolean, default: true },
   role: {
     type: String,
     enum: ["user", "admin", "manager"],
@@ -24,6 +25,8 @@ const userSchema = new mongoose.Schema({
       assignedAt: { type: Date, default: Date.now },
     },
   ],
+  friendRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });
 
 // Hash password before saving

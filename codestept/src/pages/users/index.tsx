@@ -1,4 +1,3 @@
-// pages/users.tsx
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Topbar from "@/components/Topbar/Topbar";
@@ -8,9 +7,10 @@ interface User {
   _id: string;
   username: string;
   profilePic?: string;
-  xp: number;
-  createdAt: string;
-  role: string;
+  xp?: number;
+  createdAt?: string;
+  role?: string;
+  email?: string;
 }
 
 interface LeaderboardUser {
@@ -47,8 +47,20 @@ const UsersPage = () => {
   const [selectedProblems, setSelectedProblems] = useState<string[]>([]);
   const [homeworkModalOpen, setHomeworkModalOpen] = useState<boolean>(false);
   const [homework, setHomework] = useState<Homework[]>([]);
+  const [searchProblemQuery, setSearchProblemQuery] = useState<string>("");
+  const [currentProblemPage, setCurrentProblemPage] = useState<number>(1);
+  const [friends, setFriends] = useState<string[]>([]);
+  const [fetchError, setFetchError] = useState<string>("");
 
-  // Check if logged-in user is admin
+  const problemsPerPage = 10;
+  const filteredProblems = problems.filter((problem) =>
+    problem.title.toLowerCase().includes(searchProblemQuery.toLowerCase())
+  );
+  const totalPages = Math.ceil(filteredProblems.length / problemsPerPage);
+  const startIndex = (currentProblemPage - 1) * problemsPerPage;
+  const currentProblems = filteredProblems.slice(startIndex, startIndex + problemsPerPage);
+
+  // Check if logged-in user is admin and fetch friends
   const fetchUserProfile = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -57,32 +69,52 @@ const UsersPage = () => {
         return;
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/auth/is-admin`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await response.json();
-      console.log("fetchUserProfile response (is-admin):", data);
+      const [adminResponse, friendsResponse] = await Promise.all([
+        fetch(`${API_BASE_URL}/api/auth/is-admin`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetch(`${API_BASE_URL}/api/friends`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
 
-      if (response.ok) {
-        setIsAdmin(data.isAdmin || false);
+      const adminData = await adminResponse.json();
+      console.log("fetchUserProfile - is-admin response:", adminData);
+
+      if (adminResponse.ok) {
+        setIsAdmin(adminData.isAdmin || false);
       } else {
-        setAdminCheckError("Eroare la verificarea statutului de admin: " + data.error);
+        setAdminCheckError(`Eroare la verificarea statutului de admin: ${adminData.error || "Eroare necunoscută"}`);
       }
+
+      const friendsData = await friendsResponse.json();
+      console.log("fetchUserProfile - friends response:", friendsData);
+
+      if (friendsResponse.ok) {
+        const friendIds = (friendsData.friends || []).map((friend: any) => friend._id || friend.userId).filter(Boolean);
+
+       // console.log("Friends:", friendsData.friends);
+       // console.log("Friend IDs:", friendIds);
+        setFriends(friendIds);
+      } else {
+        console.error("Eroare la obținerea prietenilor:", friendsData.error);
+        setFetchError(`Eroare la obținerea prietenilor: ${friendsData.error || "Eroare necunoscută"}`);
+      }
+      
     } catch (error) {
-      console.error("Eroare la verificarea statutului de admin:", error);
-      setAdminCheckError("Eroare la verificarea statutului de admin: " + error);
+      console.error("Eroare la verificarea statutului de admin sau prietenilor:", error);
+      setAdminCheckError(`Eroare la verificarea statutului: ${error || "Eroare necunoscută"}`);
     }
   };
 
-  // Fetch users (with search)
+  // Fetch users (all users for both admins and non-admins, search for specific queries)
   const fetchUsers = async (page: number, query: string = "") => {
     setLoading(true);
+    setFetchError("");
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        console.error("Niciun token găsit");
+        setFetchError("Niciun token găsit. Te rugăm să te autentifici.");
         return;
       }
 
@@ -90,21 +122,31 @@ const UsersPage = () => {
         ? `${API_BASE_URL}/api/users/search?query=${encodeURIComponent(query)}`
         : `${API_BASE_URL}/api/users?page=${page}&limit=10`;
 
+      console.log(`Fetching users from: ${url}`);
       const response = await fetch(url, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
+
       const data = await response.json();
+      console.log("fetchUsers response:", data);
+
       if (response.ok) {
-        setUsers(query ? data.users : data.users);
-        setHasMore(query ? true : data.hasMore);
+        const userList = data.users || [];
+        setUsers(userList);
+        setHasMore(query ? true : data.hasMore !== false);
       } else {
-        console.error("Eroare la obținerea utilizatorilor:", data.error);
+        setFetchError(`Eroare la obținerea utilizatorilor: ${data.error || "Eroare necunoscută"}`);
+        setUsers([]);
+        setHasMore(false);
       }
     } catch (error) {
-      console.error("Eroare la fetch:", error);
+      console.error("Eroare la fetch utilizatori:", error);
+      setFetchError(`Eroare la obținerea utilizatorilor: ${error || "Eroare necunoscută"}`);
+      setUsers([]);
+      setHasMore(false);
     } finally {
       setLoading(false);
     }
@@ -126,6 +168,8 @@ const UsersPage = () => {
         },
       });
       const data = await response.json();
+      console.log("fetchLeaderboard response:", data);
+
       if (response.ok) {
         setLeaderboardUsers(data.users || []);
       } else {
@@ -150,8 +194,12 @@ const UsersPage = () => {
         },
       });
       const data = await response.json();
+      console.log("fetchProblems response:", data);
+
       if (response.ok) {
-        setProblems(data.problems);
+        setProblems(data.problems || []);
+      } else {
+        console.error("Eroare la obținerea problemelor:", data.error);
       }
     } catch (error) {
       console.error("Eroare la obținerea problemelor:", error);
@@ -173,12 +221,14 @@ const UsersPage = () => {
         body: JSON.stringify({ problemIds: selectedProblems }),
       });
       const data = await response.json();
+      console.log("assignHomework response:", data);
+
       if (response.ok) {
         alert("Temă atribuită cu succes!");
         setModalOpen(false);
         setSelectedProblems([]);
       } else {
-        alert(`Eroare: ${data.error}`);
+        alert(`Eroare: ${data.error || "Eroare necunoscută"}`);
       }
     } catch (error) {
       console.error("Eroare la atribuirea temei:", error);
@@ -198,15 +248,74 @@ const UsersPage = () => {
         },
       });
       const data = await response.json();
+      console.log("viewHomework response:", data);
+
       if (response.ok) {
-        setHomework(data.homework);
+        setHomework(data.homework || []);
+        setSelectedUserId(userId);
         setHomeworkModalOpen(true);
       } else {
-        alert(`Eroare: ${data.error}`);
+        alert(`Eroare: ${data.error || "Eroare necunoscută"}`);
       }
     } catch (error) {
       console.error("Eroare la obținerea temelor:", error);
       alert("Nu s-a putut obține tema.");
+    }
+  };
+
+  // Delete homework
+  const deleteHomework = async (userId: string, problemId: string) => {
+    if (!confirm("Ești sigur că vrei să ștergi această temă?")) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const response = await fetch(`${API_BASE_URL}/api/homework/${userId}/${problemId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      console.log("deleteHomework response:", data);
+
+      if (response.ok) {
+        alert("Temă ștearsă cu succes!");
+        viewHomework(userId);
+      } else {
+        alert(`Eroare: ${data.error || "Eroare necunoscută"}`);
+      }
+    } catch (error) {
+      console.error("Eroare la ștergerea temei:", error);
+      alert("Nu s-a putut șterge tema.");
+    }
+  };
+
+  // Send friend request
+  const sendFriendRequest = async (receiverId: string) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const response = await fetch(`${API_BASE_URL}/api/friends/request/${receiverId}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      console.log("sendFriendRequest response:", data);
+
+      if (response.ok) {
+        alert("Cerere de prietenie trimisă cu succes!");
+        fetchUsers(currentPage, searchQuery);
+      } else {
+        alert(`Eroare: ${data.error || "Eroare necunoscută"}`);
+      }
+    } catch (error) {
+      console.error("Eroare la trimiterea cererii de prietenie:", error);
+      alert("Nu s-a putut trimite cererea de prietenie.");
     }
   };
 
@@ -225,11 +334,13 @@ const UsersPage = () => {
         },
       });
       const data = await response.json();
+      console.log("promoteToAdmin response:", data);
+
       if (response.ok) {
         alert("Utilizator promovat la admin!");
         fetchUsers(currentPage, searchQuery);
       } else {
-        alert(`Eroare: ${data.error}`);
+        alert(`Eroare: ${data.error || "Eroare necunoscută"}`);
       }
     } catch (error) {
       console.error("Eroare la promovarea utilizatorului:", error);
@@ -238,9 +349,10 @@ const UsersPage = () => {
   };
 
   useEffect(() => {
-    fetchUserProfile();
-    fetchUsers(currentPage);
-    fetchLeaderboard();
+    fetchUserProfile().then(() => {
+      fetchUsers(currentPage);
+      fetchLeaderboard();
+    });
   }, [currentPage]);
 
   // Handle search
@@ -321,6 +433,13 @@ const UsersPage = () => {
           </div>
         )}
 
+        {/* Fetch Error */}
+        {fetchError && (
+          <div className="mb-4 p-2 bg-red-600 text-white rounded-md">
+            {fetchError}
+          </div>
+        )}
+
         {/* Search Bar */}
         <form onSubmit={handleSearch} className="mb-6">
           <div className="flex items-center">
@@ -368,32 +487,58 @@ const UsersPage = () => {
                   </p>
                   <p className="text-gray-500 text-sm">Rol: {user.role}</p>
                 </div>
-                {isAdmin && user.role === "user" && (
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => {
-                        setSelectedUserId(user._id);
-                        fetchProblems();
-                        setModalOpen(true);
-                      }}
-                      className="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200"
-                    >
-                      Atribuie Temă
-                    </button>
-                    <button
-                      onClick={() => viewHomework(user._id)}
-                      className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
-                    >
-                      Vezi Teme
-                    </button>
-                    <button
-                      onClick={() => promoteToAdmin(user._id)}
-                      className="px-3 py-1 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors duration-200"
-                    >
-                      Fă Admin
-                    </button>
-                  </div>
-                )}
+                <div className="flex space-x-2">
+                  {isAdmin ? (
+                    <>
+                      {friends.includes(user._id) && user.role === "user" && (
+                        <>
+                          <button
+                            onClick={() => {
+                              setSelectedUserId(user._id);
+                              fetchProblems();
+                              setModalOpen(true);
+                            }}
+                            className="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200"
+                          >
+                            Atribuie Temă
+                          </button>
+                          <button
+                            onClick={() => viewHomework(user._id)}
+                            className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
+                          >
+                            Vezi Teme
+                          </button>
+                        </>
+                      )}
+                      {!friends.includes(user._id) && user.role === "user" && (
+                        <button
+                          onClick={() => sendFriendRequest(user._id)}
+                          className="px-3 py-1 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition-colors duration-200"
+                        >
+                          Cere să fii îndrumător
+                        </button>
+                      )}
+                      {user.role === "user" && (
+                        <button
+                          onClick={() => promoteToAdmin(user._id)}
+                          className="px-3 py-1 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors duration-200"
+                        >
+                          Fă Admin
+                        </button>
+                      )}
+                    </>
+                  ) : (
+                    !friends.includes(user._id) &&
+                    user.role === "admin" && (
+                      <button
+                        onClick={() => sendFriendRequest(user._id)}
+                        className="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200"
+                      >
+                        Cere îndrumare
+                      </button>
+                    )
+                  )}
+                </div>
               </div>
             ))}
           </div>
@@ -426,33 +571,67 @@ const UsersPage = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-gray-800 p-6 rounded-lg w-full max-w-md">
               <h2 className="text-2xl font-bold mb-4">Atribuie Temă</h2>
+              <div className="mb-4">
+                <input
+                  type="text"
+                  value={searchProblemQuery}
+                  onChange={(e) => setSearchProblemQuery(e.target.value)}
+                  placeholder="Caută probleme..."
+                  className="w-full px-4 py-2 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
+                />
+              </div>
               <div className="max-h-64 overflow-y-auto">
-                {problems.map((problem) => (
-                  <div key={problem._id} className="flex items-center mb-2">
-                    <input
-                      type="checkbox"
-                      id={problem._id}
-                      checked={selectedProblems.includes(problem._id)}
-                      onChange={() => {
-                        setSelectedProblems((prev) =>
-                          prev.includes(problem._id)
-                            ? prev.filter((id) => id !== problem._id)
-                            : [...prev, problem._id]
-                        );
-                      }}
-                      className="mr-2"
-                    />
-                    <label htmlFor={problem._id} className="text-gray-300">
-                      {problem.title}
-                    </label>
-                  </div>
-                ))}
+                {currentProblems.length > 0 ? (
+                  currentProblems.map((problem) => (
+                    <div key={problem._id} className="flex items-center mb-2">
+                      <input
+                        type="checkbox"
+                        id={problem._id}
+                        checked={selectedProblems.includes(problem._id)}
+                        onChange={() => {
+                          setSelectedProblems((prev) =>
+                            prev.includes(problem._id)
+                              ? prev.filter((id) => id !== problem._id)
+                              : [...prev, problem._id]
+                          );
+                        }}
+                        className="mr-2"
+                      />
+                      <label htmlFor={problem._id} className="text-gray-300">
+                        {problem.title}
+                      </label>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-400">Nicio problemă găsită.</p>
+                )}
+              </div>
+              <div className="mt-4 flex justify-between items-center">
+                <button
+                  onClick={() => setCurrentProblemPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentProblemPage === 1}
+                  className="px-3 py-1 bg-gray-600 text-white rounded-md disabled:bg-gray-500 disabled:cursor-not-allowed hover:bg-gray-700"
+                >
+                  Anterior
+                </button>
+                <span className="text-gray-300">
+                  Pagina {currentProblemPage} din {totalPages}
+                </span>
+                <button
+                  onClick={() => setCurrentProblemPage((prev) => prev + 1)}
+                  disabled={currentProblemPage === totalPages}
+                  className="px-3 py-1 bg-gray-600 text-white rounded-md disabled:bg-gray-500 disabled:cursor-not-allowed hover:bg-gray-700"
+                >
+                  Următor
+                </button>
               </div>
               <div className="mt-4 flex justify-end space-x-2">
                 <button
                   onClick={() => {
                     setModalOpen(false);
                     setSelectedProblems([]);
+                    setSearchProblemQuery("");
+                    setCurrentProblemPage(1);
                   }}
                   className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
                 >
@@ -478,13 +657,21 @@ const UsersPage = () => {
               {homework.length > 0 ? (
                 <div className="max-h-64 overflow-y-auto">
                   {homework.map((hw) => (
-                    <div key={hw.problemId} className="mb-2">
-                      <Link href={`/problems/${hw.problemId}`}>
-                        <p className="text-gray-300 hover:text-blue-300 cursor-pointer">{hw.title}</p>
-                      </Link>
-                      <p className="text-gray-500 text-sm">
-                        Atribuit: {new Date(hw.assignedAt).toLocaleDateString()}
-                      </p>
+                    <div key={hw.problemId} className="mb-2 flex justify-between items-center">
+                      <div>
+                        <Link href={`/problems/${hw.problemId}`}>
+                          <p className="text-gray-300 hover:text-blue-300 cursor-pointer">{hw.title}</p>
+                        </Link>
+                        <p className="text-gray-500 text-sm">
+                          Atribuit: {new Date(hw.assignedAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => deleteHomework(selectedUserId, hw.problemId)}
+                        className="px-2 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200"
+                      >
+                        Șterge
+                      </button>
                     </div>
                   ))}
                 </div>

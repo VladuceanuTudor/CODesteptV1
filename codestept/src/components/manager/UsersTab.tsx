@@ -15,6 +15,7 @@ interface User {
   xp: number;
   role: "user" | "admin" | "manager";
   createdAt: string;
+  isActive: boolean;
 }
 
 interface Problem {
@@ -110,7 +111,7 @@ const UsersTab = ({ users, problems, fetchUsers, setActionError }: Props) => {
 
   // Delete user
   const deleteUser = async (userId: string) => {
-    if (!confirm("Ești sigur că vrei să ștergi acest utilizator?")) return;
+    
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -124,14 +125,14 @@ const UsersTab = ({ users, problems, fetchUsers, setActionError }: Props) => {
       });
       const data = await response.json();
       if (response.ok) {
-        alert("Utilizator șters cu succes!");
+        
         fetchUsers();
       } else {
         setActionError(`Eroare: ${data.error}`);
       }
     } catch (error) {
-      console.error("Eroare la ștergerea utilizatorului:", error);
-      setActionError("Nu s-a putut șterge utilizatorul.");
+      console.error("Eroare la dezactivarea utilizatorului:", error);
+      setActionError("Nu s-a putut dezactiva utilizatorul.");
     }
   };
 
@@ -213,13 +214,21 @@ const UsersTab = ({ users, problems, fetchUsers, setActionError }: Props) => {
                 >
                   Editează
                 </button>
-                <button
+                {user.isActive === true ? ( <button
                   onClick={() => deleteUser(user._id)}
                   className="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700"
                   disabled={user.role === "manager"}
                 >
-                  Șterge
+                  Dezactiveaza
                 </button>
+                ): (
+                  <button
+                  onClick={() => deleteUser(user._id)}
+                  className="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700"
+                  disabled={user.role === "manager"}
+                >
+                  Activeaza
+                </button>)}
               </div>
             </div>
           ))}

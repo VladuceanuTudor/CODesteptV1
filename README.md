@@ -51,7 +51,7 @@ CODesteptV1 este o aplicație web full-stack concepută pentru a ajuta utilizato
     MONGO_URI=mongodb:
     JWT_SECRET=
     PORT=5000
-    EMAIL_USER=
+    EMAIL_USER=  //pentru schimbarea parolei prin email
     EMAIL_PASS=
    ```
    **Notă:** Asigură-te că adaugi toate variabilele de mediu necesare, bazate pe cerințele din codul tău (de exemplu, dacă folosești alte servicii sau API-uri externe).
@@ -74,7 +74,7 @@ CODesteptV1 este o aplicație web full-stack concepută pentru a ajuta utilizato
    ```
 2. **Pornește serverul de dezvoltare front-end:**
    ```bash
-   cd ../codestept
+   cd codestept
    npm run dev
    ```
 3. **Accesează aplicația în browser la [localhost:3000](https://localhost:3000).**
@@ -97,7 +97,7 @@ CODesteptV1 este o aplicație web full-stack concepută pentru a ajuta utilizato
 #### User:
 - Se poate da submit la o problema
 - Poti vizualiza paginile de profil ale altor utilizatori
-- Poti sa primesti teme de la userii de tip profesor
+- Poti sa primesti teme de la userii de tip profesor(care ii sunt indrumatori)
 - Poti sa iti schimbi usernameul sau poza de profil
 - Poti sa strangi XP(facand probleme) si sa concurezi cu ceilalti useri sa ajungi in leaderboard(Top 10 users by xp) 
 - Poate vedea problemele facute, acestea fiind afisate intr-o lista in profil
@@ -105,12 +105,15 @@ CODesteptV1 este o aplicație web full-stack concepută pentru a ajuta utilizato
 - Poate da like/dislike la o problema
 - Poate adauga un comentariu la o problema(se poate intra in sectiunea de comentarii din meniul principal cu probleme din boxul unei probleme)
 
+
 #### Profesor:
 - Poate crea noi probleme
 - Poate vedea problemele facute de el si edita
-- Poate asigna probleme ca tema userilor
+- Poate asigna probleme ca tema userilor carora le este indrumator
 - Poate face alti useri din user normal -> admin
 - Poate vizualiza ce probleme au asignate la tema alti useri
+- Poate cere unui user sa ii devina indrumator
+- Poate sterge o tema asignata unui user
 
 #### Manager:
 - Are control complet asupra datelor stocate in baza de date
@@ -125,6 +128,15 @@ Din tabela de manager de la /manager (se poate accesa si din navbar)
 * Vizualizare useri + cautare
 * Pagina de contact
 * In navbarul din interfata unei probleme este adaugata functionalitatea de timer
+
+#### Pagina de profil:
+- Poti vedea:
+   * profil
+   * probleme rezolvate
+   * probleme favorite
+   * prieteni(relatie user-admin)
+   * cereri de prietenie
+   * setari
 
 # Arhitectura proiectului:
 
