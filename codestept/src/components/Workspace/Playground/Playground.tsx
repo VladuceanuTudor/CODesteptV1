@@ -155,6 +155,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
       }
   
       const data = await response.json();
+      //console.log("Submission response:", data);
       setTestResults(data.results);
       const allPassed = data.results.every((result: any) => result.status === "passed");
       if (allPassed) {
@@ -249,10 +250,10 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
                       <p className="text-white text-sm">{result.details}</p>
                     )}
                     {result.actual && (
-                      <p className="text-white text-sm">Actual: {result.actual}</p>
+                      <p className="text-white text-sm">Actual: {result.actual.split(',').map(code => String.fromCharCode(Number(code))).join('')}</p>
                     )}
                     {result.expected && (
-                      <p className="text-white text-sm">Expected: {result.expected}</p>
+                      <p className="text-white text-sm">Expected: {result.expected.split(',').map(code => String.fromCharCode(Number(code))).join('')}</p>
                     )}
                   </div>
                 ))}
