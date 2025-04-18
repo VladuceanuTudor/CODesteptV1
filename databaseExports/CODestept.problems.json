@@ -1,45 +1,5 @@
 [{
   "_id": {
-    "$oid": "67eab563f6ad23e9b9b4f677"
-  },
-  "title": "Hello World",
-  "problemStatement": "Te rog sa faci un program care sa afiseze in consola \"Hello World!\".",
-  "description": "-bine ai venit pe platforma mea",
-  "difficulty": "Easy",
-  "category": "Intro",
-  "examples": [
-    {
-      "inputText": "Nimic",
-      "outputText": "Hello World",
-      "explanation": "",
-      "_id": {
-        "$oid": "67eab563f6ad23e9b9b4f678"
-      }
-    }
-  ],
-  "constraints": [
-    ""
-  ],
-  "starterCode": "#include <iostream>\n\nint main(){\n\n}",
-  "handlerFunction": "",
-  "starterFunctionName": "",
-  "testCases": [
-    {
-      "input": "NULL",
-      "expectedOutput": "Hello World",
-      "_id": {
-        "$oid": "67eab563f6ad23e9b9b4f679"
-      }
-    }
-  ],
-  "likes": 0,
-  "dislikes": 0,
-  "likedBy": [],
-  "dislikedBy": [],
-  "__v": 0
-},
-{
-  "_id": {
     "$oid": "67eabf3b6342aa2eca99f5ca"
   },
   "title": "test23",
@@ -86,7 +46,7 @@
   "author": {
     "$oid": "67ea929edcca7b63f57cc74b"
   },
-  "__v": 13
+  "__v": 15
 },
 {
   "_id": {
@@ -184,5 +144,5 @@
   "author": {
     "$oid": "67ea929edcca7b63f57cc74b"
   },
-  "__v": 0
+  "__v": 2
 }]
